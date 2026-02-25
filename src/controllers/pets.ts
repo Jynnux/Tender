@@ -2,6 +2,9 @@ import { Request, Response } from 'express';
 import { Pet } from '../entities/Pet.js';
 import { petIdCounter, pets } from '../models/pets.js';
 import { CreatePetSchema } from '../validators/pets.js';
+// TODO: implement status computation function
+import { differenceInMilliseconds } from 'date-fns';
+import { NEGLECT_THRESHOLD_MS } from './utils/config.js';
 
 export function createPet(req: Request, res: Response): void {
   const result = CreatePetSchema.safeParse(req.body);
@@ -43,6 +46,15 @@ export function getPet(req: Request, res: Response): void {
   res.status(200).json(pet);
 }
 
+// TODO: Retrieve update and delete functions from Gab
 export function updatePet() {}
 
 export function deletePet() {}
+
+// TODO: Finish computation function
+export function computeStage(pet: Pet) {
+  const msSinceFed = differenceInMilliseconds(new Date(), pet.lastFedAt);
+  if (msSinceFed > NEGLECT_THRESHOLD_MS) {
+    return { stage: 'Cooked', emoji: '🍗' };
+  }
+}

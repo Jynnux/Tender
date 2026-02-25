@@ -24,3 +24,25 @@ export function createPet(req: Request, res: Response): void {
   pets.push(newPet);
   res.status(201).json(newPet);
 }
+
+export function getPets(req: Request, res: Response): void {
+  for (const pet in pets) {
+    console.log(pet);
+  }
+  res.status(200).json(pets);
+}
+
+export function getPet(req: Request, res: Response): void {
+  const identifier = Number(req.params.petId);
+  const pet = pets.find((p) => p.id === identifier);
+
+  if (!pet) {
+    res.status(404).json({ error: `Pet with ID ${identifier} not found` });
+  }
+
+  res.status(200).json(pet);
+}
+
+export function updatePet() {}
+
+export function deletePet() {}

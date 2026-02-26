@@ -7,6 +7,7 @@ app.use(express.json());
 
 // --- Your routes will go below this line ---
 import { createHabit, getHabit } from './controllers/habits.js';
+import { logHabit } from './controllers/logs.js';
 import { createPet, deletePet, getPet, getPets, updatePet } from './controllers/pets.js';
 
 // --- Pet Manipulation: One Post, Two Gets, One Put, One Delete ---

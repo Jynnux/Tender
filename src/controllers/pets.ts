@@ -1,10 +1,9 @@
 import { Request, Response } from 'express';
 import { Pet } from '../entities/Pet.js';
+import { logs } from '../models/logs.js';
 import { petIdCounter, pets } from '../models/pets.js';
 import { CreatePetSchema } from '../validators/pets.js';
 // TODO: implement status computation function
-import { differenceInMilliseconds } from 'date-fns';
-import { NEGLECT_THRESHOLD_MS } from './utils/config.js';
 
 export function createPet(req: Request, res: Response): void {
   const result = CreatePetSchema.safeParse(req.body);
@@ -42,8 +41,21 @@ export function getPet(req: Request, res: Response): void {
   if (!pet) {
     res.status(404).json({ error: `Pet with ID ${identifier} not found` });
   }
-
-  res.status(200).json(pet);
+  const petGrowth = logs.filter((l) => l.petId === pet.id);
+  // harnessing my inner yandere dev for this one
+  if (petGrowth.length === 0) {
+    res.status(200).json({
+      pet: pet,
+      stage: '🥚',
+    });
+  }
+  if (petGrowth.length >= 1 && petGrowth.length <= 4) {
+    res.status(200).json('🐣');
+  }
+  if (petGrowth.length >= 5 && petGrowth.length <= 14) {
+    res.status(200).json('🐥');
+  }
+  res.status(200).json('🐓');
 }
 
 // TODO: Retrieve update and delete functions from Gab
@@ -52,9 +64,3 @@ export function updatePet() {}
 export function deletePet() {}
 
 // TODO: Finish computation function
-export function computeStage(pet: Pet) {
-  const msSinceFed = differenceInMilliseconds(new Date(), pet.lastFedAt);
-  if (msSinceFed > NEGLECT_THRESHOLD_MS) {
-    return { stage: 'Cooked', emoji: '🍗' };
-  }
-}

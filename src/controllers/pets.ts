@@ -2,8 +2,34 @@ import { Request, Response } from 'express';
 import { Pet } from '../entities/Pet.js';
 import { logs } from '../models/logs.js';
 import { petIdCounter, pets } from '../models/pets.js';
-import { CreatePetSchema } from '../validators/pets.js';
-// TODO: implement status computation function
+import { CreatePetSchema, UpdatePetSchema } from '../validators/pets.js';
+
+export function displayPet(req: Request, res: Response, pet: Pet): void {
+  const petGrowth = logs.filter((l) => l.petId === pet.id);
+  // harnessing my inner yandere dev for this one
+  if (petGrowth.length === 0) {
+    res.status(200).json({
+      pet: pet,
+      stage: '🥚',
+    });
+  }
+  if (petGrowth.length >= 1 && petGrowth.length <= 4) {
+    res.status(200).json({
+      pet: pet,
+      stage: '🐣',
+    });
+  }
+  if (petGrowth.length >= 5 && petGrowth.length <= 14) {
+    res.status(200).json({
+      pet: pet,
+      stage: '🐥',
+    });
+  }
+  res.status(200).json({
+    pet: pet,
+    stage: '🐓',
+  });
+}
 
 export function createPet(req: Request, res: Response): void {
   const result = CreatePetSchema.safeParse(req.body);
@@ -28,10 +54,17 @@ export function createPet(req: Request, res: Response): void {
 }
 
 export function getPets(req: Request, res: Response): void {
-  for (const pet in pets) {
-    console.log(pet);
+  let filteredPets = pets;
+  if (req.query.species) {
+    filteredPets = filteredPets.filter((pet) => pet.species === req.query.species);
   }
-  res.status(200).json(pets);
+  if (req.query.happiness) {
+    filteredPets = filteredPets.filter(
+      (pet) => Number(pet.happiness) >= Number(req.query.happiness),
+    );
+  }
+
+  res.status(200).json(filteredPets);
 }
 
 export function getPet(req: Request, res: Response): void {
@@ -41,26 +74,44 @@ export function getPet(req: Request, res: Response): void {
   if (!pet) {
     res.status(404).json({ error: `Pet with ID ${identifier} not found` });
   }
-  const petGrowth = logs.filter((l) => l.petId === pet.id);
-  // harnessing my inner yandere dev for this one
-  if (petGrowth.length === 0) {
-    res.status(200).json({
-      pet: pet,
-      stage: '🥚',
-    });
-  }
-  if (petGrowth.length >= 1 && petGrowth.length <= 4) {
-    res.status(200).json('🐣');
-  }
-  if (petGrowth.length >= 5 && petGrowth.length <= 14) {
-    res.status(200).json('🐥');
-  }
-  res.status(200).json('🐓');
+  // made my json tree into a function. surely this is allowed
+  displayPet(req, res, pet);
 }
 
-// TODO: Retrieve update and delete functions from Gab
-export function updatePet() {}
+export function updatePet(req: Request, res: Response): void {
+  const result = UpdatePetSchema.safeParse(req.body);
 
-export function deletePet() {}
+  if (!result.success) {
+    res.status(400).json({ errors: result.error });
+    return;
+  }
 
-// TODO: Finish computation function
+  const petId = Number(req.params.petId);
+  const pet = pets.find((p) => p.id === petId);
+
+  if (!pet) {
+    res.status(404).json({ message: 'Pet not found' });
+    return;
+  }
+
+  pet.name = result.data.name;
+
+  displayPet(req, res, pet);
+  return;
+}
+
+export function deletePet(req: Request, res: Response): void {
+  const petId = Number(req.params.petId);
+
+  const index = pets.findIndex((p) => p.id === petId);
+
+  if (index === -1) {
+    res.status(404).json({ message: 'Pet not found' });
+    return;
+  }
+
+  pets.splice(index, 1);
+
+  res.status(204).send(); // 204; Successful call, nothing else to send
+  return;
+}

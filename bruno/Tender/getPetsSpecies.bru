@@ -1,0 +1,20 @@
+meta {
+  name: getPetsSpecies
+  type: http
+  seq: 13
+}
+
+get {
+  url: http://localhost:9812/pets?species=cat
+  body: none
+  auth: inherit
+}
+
+params:query {
+  species: cat
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

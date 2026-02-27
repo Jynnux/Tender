@@ -1,0 +1,16 @@
+meta {
+  name: getHabits
+  type: http
+  seq: 14
+}
+
+get {
+  url: http://localhost:9812/pets/1/habits
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

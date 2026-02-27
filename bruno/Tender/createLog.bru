@@ -1,0 +1,23 @@
+meta {
+  name: createLog
+  type: http
+  seq: 22
+}
+
+post {
+  url: http://localhost:9812/pets/2/logs
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "habitId": 2,
+    "note": "Test ;)"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

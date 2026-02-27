@@ -1,0 +1,26 @@
+meta {
+  name: createHabitInvalid
+  type: http
+  seq: 20
+}
+
+post {
+  url: http://localhost:9812/pets/1000/habits
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Active",
+    "category": "fitness",
+    "targetFrequency": 3,
+    "statBoost": "energy"
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

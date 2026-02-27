@@ -1,0 +1,26 @@
+meta {
+  name: createHabit
+  type: http
+  seq: 10
+}
+
+post {
+  url: http://localhost:9812/pets/2/habits
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Watched YouTube",
+    "category": "fitness",
+    "targetFrequency": 3,
+    "statBoost": "happiness"
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

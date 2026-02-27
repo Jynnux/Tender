@@ -5,4 +5,9 @@ export const CreatePetSchema = z.object({
   species: z.enum(['cat', 'dragon', 'blob', 'plant', 'rock']),
 });
 
+export const UpdatePetSchema = z.object({
+  name: z.string().min(1).max(20),
+});
+
 export type CreatePetBody = z.infer<typeof CreatePetSchema>;
+export type UpdatePetBody = z.infer<typeof UpdatePetSchema>;

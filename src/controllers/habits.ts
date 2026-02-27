@@ -11,7 +11,7 @@ export function createHabit(req: Request, res: Response) {
   const identifier = Number(req.params.petId);
 
   const pet = pets.find((p) => p.id === identifier);
-  // TODO: Check if pet is cooked or not. If cooked, throw 400 error.
+  // Check if pet is cooked or not. If cooked, throw 400 error.
   if (differenceInMilliseconds(new Date(), pet.lastFedAt) > NEGLECT_THRESHOLD_MS) {
     res.status(400).json({ error: 'This pet has been cooked. Adopt a new one' });
     return;
